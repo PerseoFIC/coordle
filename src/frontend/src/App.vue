@@ -1,6 +1,9 @@
 <template>
 	<v-app>
 		<b-container id="contenedor-titulo" class="text-center position-relative border-bottom mb-3">
+			<div id="icono-info" class="position-absolute izquierda">
+				<img src="/icons/info-circle.svg" width="32" height="32" @click="mostrarInfo">
+			</div>
 			<h1 class="text-center mb-0 centrado-vertical">COORDLE</h1>
 			<div id="icono-ayuda" class="position-absolute derecha">
 				<img src="/icons/patch-question.svg" width="32" height="32" @click="mostrarAyuda">
@@ -68,7 +71,7 @@
 		<div>
 			<b-modal id="modalAyuda" size="lg" ref="modal-ayuda" hide-footer title="Ayuda">
 				<div class="d-block text-center">
-					<h3>¿Cómo jugar?</h3>
+					<h3>¿Cómo jugar?<br><br></h3>
 					<h5>
 					Debes acertar las coordenadas de la capital que se muestra, averiguando su latitud y longitud medidas en grados (redondeado a su valor más cercano).<br><br>
 					La latitud tendrá un valor entre los 0 y los 90 grados, pudiendo ser Norte o Sur.<br><br>
@@ -79,6 +82,22 @@
 				</div>
 				<div class="d-block text-center">
 					<b-button pill class="mt-3" variant="outline-info" @click="ocultarAyuda">Cerrar</b-button>
+				</div>
+			</b-modal>
+		</div>
+		<div>
+			<b-modal id="modalInfo" size="lg" ref="modal-ayuda" hide-footer title="Información">
+				<div class="d-block text-center">
+					<h3>Información<br><br></h3>
+					<h5>
+					Juego de coordenadas estilo <a href="https://www.powerlanguage.co.uk/wordle">Wordle</a>.<br><br>
+					Juego subido a <a href="https://coordle.herokuapp.com/">Heroku</a>.<br><br>
+					Proyecto disponible en <a href="https://github.com/PerseoFIC/coordle">GitHub</a>.<br><br>
+					Imágenes de territorios de <a href="https://github.com/djaiss/mapsicon">MapsIcon</a>.
+					</h5>
+				</div>
+				<div class="d-block text-center">
+					<b-button pill class="mt-3" variant="outline-info" @click="ocultarInfo">Cerrar</b-button>
 				</div>
 			</b-modal>
 		</div>
@@ -97,7 +116,7 @@ export default {
 			coordenadas: '',
 			celdas: [],
 			estado: [],
-			direccionesPosibles: ['/icons/arrow-up-square-fill.svg', '/icons/arrow-up-right-square-fill.svg', '/icons/arrow-right-square-fill.svg', '/icons/arrow-down-right-square-fill.svg', '/icons/arrow-down-square-fill.svg', '/icons/arrow-down-left-square-fill.svg', '/icons/arrow-left-square-fill.svg', '/icons/arrow-up-left-square-fill.svg', '/icons/arrow-up-square-fill.svg', '/icons/question-square-fill.svg'],
+			direccionesPosibles: ['/icons/arrow-up-square-fill.svg', '/icons/arrow-up-right-square-fill.svg', '/icons/arrow-right-square-fill.svg', '/icons/arrow-down-right-square-fill.svg', '/icons/arrow-down-square-fill.svg', '/icons/arrow-down-left-square-fill.svg', '/icons/arrow-left-square-fill.svg', '/icons/arrow-up-left-square-fill.svg', '/icons/arrow-up-square-fill.svg', '/icons/question-square-fill.svg', '/icons/bullseye.svg'],
 			direcciones: [9, 9, 9, 9, 9, 9],
 			indiceCeldas: 0,
 			indiceCiudad: 0,
@@ -144,7 +163,11 @@ export default {
 				this.estado[parseInt(this.indiceCiudad * 8) + 5] = response.data.valor6;
 				this.estado[parseInt(this.indiceCiudad * 8) + 6] = response.data.valor7;
 				this.estado[parseInt(this.indiceCiudad * 8) + 7] = response.data.exito;
-				this.direcciones[this.indiceCiudad] = response.data.direccion;
+				if (response.data.exito) {
+					this.direcciones[this.indiceCiudad] = 10;
+				} else {
+					this.direcciones[this.indiceCiudad] = response.data.direccion;
+				}
 				this.indiceCiudad++;
 				this.indiceCeldas++;
 				this.coordenadas = '';
@@ -218,6 +241,14 @@ export default {
 			document.getElementById('modalAyuda').style.display = 'none';
 			document.getElementById("modalAyuda").classList.remove("show");
 		},
+		mostrarInfo() {
+			document.getElementById('modalInfo').style.display = 'inline';
+			document.getElementById("modalInfo").classList.add("show");
+		},
+		ocultarInfo() {
+			document.getElementById('modalInfo').style.display = 'none';
+			document.getElementById("modalInfo").classList.remove("show");
+		},
 		nuevaPartida() {
 			axios.get('/coordledia/nuevo')
 			.then(response => {
@@ -248,7 +279,7 @@ export default {
 
 <style>
 	.container {
-		max-width: 540px !important;
+		width: 540px !important;
 		padding: 12px !important;
 	}
 	#contenedor-titulo > h1 {
@@ -259,12 +290,14 @@ export default {
 	.centrado-vertical {
 		vertical-align: middle;
 	}
+	.izquierda {
+		top: 0px;
+		padding-top: 24px;
+	}
 	.derecha {
 		top: 0px;
-		right: 0px;
-	}
-	#icono-ayuda {
 		padding-top: 24px;
+		right: 0px;
 	}
 	#contenedor-busqueda {
 		text-align: center;
@@ -279,7 +312,6 @@ export default {
 		padding: 8px 15px !important;
 	}
 	#contenedor-celdas {
-		width: 540px;
 		height: 400px;
 		display: grid;
 		box-sizing: border-box;
@@ -320,5 +352,8 @@ export default {
 	}
 	.modal-header {
 		display: inline;
+	}
+	.modal-title {
+		text-align: center;
 	}
 </style>
