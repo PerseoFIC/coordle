@@ -5,12 +5,15 @@
 				<img src="/icons/info-circle.svg" width="32" height="32" @click="mostrarInfo">
 			</div>
 			<h1 class="text-center mb-0 centrado-vertical">COORDLE</h1>
+			<div id="icono-estadisticas" class="position-absolute derecha">
+				<img src="/icons/clipboard-data.svg" width="32" height="32" @click="mostrarEstadisticas">
+			</div>
 			<div id="icono-ayuda" class="position-absolute derecha">
 				<img src="/icons/patch-question.svg" width="32" height="32" @click="mostrarAyuda">
 			</div>
 		</b-container>
 		<b-container id="contenedor-busqueda">
-			<img width="128" height="128" :src="getURLImagen()"/>
+			<img width="128" height="128" :src="this.getURLImagen()"/>
 			<p class="capital-busqueda">{{ nombreCiudad }} - {{ territorioCiudad }}</p>
 		</b-container>
 		<b-container id="contenedor-celdas">
@@ -69,7 +72,7 @@
 			</b-modal>
 		</div>
 		<div>
-			<b-modal id="modalAyuda" size="lg" ref="modal-ayuda" hide-footer title="Ayuda">
+			<b-modal id="modalAyuda" size="lg" hide-footer title="Ayuda">
 				<div class="d-block text-center">
 					<h3>¿Cómo jugar?<br><br></h3>
 					<h5>
@@ -86,7 +89,7 @@
 			</b-modal>
 		</div>
 		<div>
-			<b-modal id="modalInfo" size="lg" ref="modal-ayuda" hide-footer title="Información">
+			<b-modal id="modalInfo" size="lg" hide-footer title="Información">
 				<div class="d-block text-center">
 					<h3>Información<br><br></h3>
 					<h5>
@@ -98,6 +101,69 @@
 				</div>
 				<div class="d-block text-center">
 					<b-button pill class="mt-3" variant="outline-info" @click="ocultarInfo">Cerrar</b-button>
+				</div>
+			</b-modal>
+		</div>
+		<div>
+			<b-modal id="modalEstadisticas" size="lg" hide-footer title="Estadísticas">
+				<div class="d-block text-center">
+					<h3>Estadísticas<br><br></h3>
+					<div class="row">
+						<div class="col">
+							<h1>{{ this.estadisticas.jugadas }}</h1>
+							<h5>Jugadas</h5>
+						</div>
+						<div class="col">
+							<h1>{{ this.estadisticas.ganadas }}</h1>
+							<h5>Ganadas</h5>
+						</div>
+						<div class="col">
+							<h1>{{ this.estadisticas.rachaActual }}</h1>
+							<h5>Racha actual</h5>
+						</div>
+						<div class="col">
+							<h1>{{ this.estadisticas.mejorRacha }}</h1>
+							<h5>Mejor racha</h5>
+						</div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-1">1: </div>
+						<div class="col-6"><div class="progress"><div class="progress-bar bg-success" role="progressbar" :style="this.getProgreso(this.estadisticas.exitos[0])">{{ this.estadisticas.exitos[0] }}</div></div></div>
+						<div class="col-1">{{ this.getPorcentajeSobreTotal(this.estadisticas.exitos[0]) }}</div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-1">2: </div>
+						<div class="col-6"><div class="progress"><div class="progress-bar bg-success" role="progressbar" :style="this.getProgreso(this.estadisticas.exitos[1])">{{ this.estadisticas.exitos[1] }}</div></div></div>
+						<div class="col-1">{{ this.getPorcentajeSobreTotal(this.estadisticas.exitos[1]) }}</div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-1">3: </div>
+						<div class="col-6"><div class="progress"><div class="progress-bar bg-success" role="progressbar" :style="this.getProgreso(this.estadisticas.exitos[2])">{{ this.estadisticas.exitos[2] }}</div></div></div>
+						<div class="col-1">{{ this.getPorcentajeSobreTotal(this.estadisticas.exitos[2]) }}</div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-1">4: </div>
+						<div class="col-6"><div class="progress"><div class="progress-bar bg-warning" role="progressbar" :style="this.getProgreso(this.estadisticas.exitos[3])">{{ this.estadisticas.exitos[3] }}</div></div></div>
+						<div class="col-1">{{ this.getPorcentajeSobreTotal(this.estadisticas.exitos[3]) }}</div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-1">5: </div>
+						<div class="col-6"><div class="progress"><div class="progress-bar bg-warning" role="progressbar" :style="this.getProgreso(this.estadisticas.exitos[4])">{{ this.estadisticas.exitos[4] }}</div></div></div>
+						<div class="col-1">{{ this.getPorcentajeSobreTotal(this.estadisticas.exitos[4]) }}</div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-1">6: </div>
+						<div class="col-6"><div class="progress"><div class="progress-bar bg-warning" role="progressbar" :style="this.getProgreso(this.estadisticas.exitos[5])">{{ this.estadisticas.exitos[5] }}</div></div></div>
+						<div class="col-1">{{ this.getPorcentajeSobreTotal(this.estadisticas.exitos[5]) }}</div>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-1">X: </div>
+						<div class="col-6"><div class="progress"><div class="progress-bar bg-danger" role="progressbar" :style="this.getProgreso(this.estadisticas.fracasos)">{{ this.estadisticas.fracasos }}</div></div></div>
+						<div class="col-1">{{ this.getPorcentajeSobreTotal(this.estadisticas.fracasos) }}</div>
+					</div>
+				</div>
+				<div class="d-block text-center">
+					<b-button pill class="mt-3" variant="outline-info" @click="ocultarEstadisticas">Cerrar</b-button>
 				</div>
 			</b-modal>
 		</div>
@@ -118,15 +184,15 @@ export default {
 			estado: [],
 			direccionesPosibles: ['/icons/arrow-up-square-fill.svg', '/icons/arrow-up-right-square-fill.svg', '/icons/arrow-right-square-fill.svg', '/icons/arrow-down-right-square-fill.svg', '/icons/arrow-down-square-fill.svg', '/icons/arrow-down-left-square-fill.svg', '/icons/arrow-left-square-fill.svg', '/icons/arrow-up-left-square-fill.svg', '/icons/arrow-up-square-fill.svg', '/icons/question-square-fill.svg', '/icons/bullseye.svg'],
 			direcciones: [9, 9, 9, 9, 9, 9],
-			indiceCeldas: 0,
 			indiceCiudad: 0,
+			indiceCeldas: 0,
 			intento: { latitud: 0, longitud: 0, coordleDia: 0, etiquetas: '' },
-			errores: [],
-			isDisabledNuevaPartida: true
+			isDisabledNuevaPartida: true,
+			partidaGuardada: {idCoordleDia: 0, nombreCiudad: '', territorioCiudad: '', abreviaturaCiudad: '--', celdas: [], estado: [], direcciones: [9, 9, 9, 9, 9, 9], indiceCiudad: 0, indiceCeldas: 0, isDisabledNuevaPartida: true},
+			estadisticas: {jugadas: 0, ganadas: 0, rachaActual: 0, mejorRacha: 0, exitos: [0, 0, 0, 0, 0, 0], fracasos: 0}
 		};
 	},
 	methods: {
-		/*global getURLImagen:true*/
 		getURLImagen() {
 			if (this.abreviaturaCiudad == '--') {
 				axios.get('/coordledia')
@@ -137,10 +203,26 @@ export default {
 					this.abreviaturaCiudad = response.data.abreviatura
 				})
 				.catch(e => {
-					this.errores.push(e)
+					console.log(e)
 				})
 			}
 			return "/images/" + this.abreviaturaCiudad + "/256.png";
+		},
+		getProgreso(valor) {
+			var maximo = 0;
+			if (this.estadisticas.jugadas > 0) {
+				maximo = Math.max(...this.estadisticas.exitos);
+				maximo = Math.max(maximo, this.estadisticas.fracasos);
+			}
+			var progreso = Math.round(valor * 100 / maximo);
+			return 'width: ' + progreso + '%';
+		},
+		getPorcentajeSobreTotal(valor) {
+			var porcentaje = 0;
+			if (this.estadisticas.jugadas > 0) {
+				porcentaje = Math.round(valor * 100 / this.estadisticas.jugadas);
+			}
+			return '(' + porcentaje + '%)';
 		},
 		setValor(valor) {
 			this.celdas[this.indiceCeldas++] = valor;
@@ -165,11 +247,31 @@ export default {
 				this.estado[parseInt(this.indiceCiudad * 8) + 7] = response.data.exito;
 				if (response.data.exito) {
 					this.direcciones[this.indiceCiudad] = 10;
+					this.partidaGuardada.isDisabledNuevaPartida = false;
+					this.estadisticas.jugadas++;
+					this.estadisticas.ganadas++;
+					this.estadisticas.rachaActual++;
+					if (this.estadisticas.rachaActual > this.estadisticas.mejorRacha) {
+						this.estadisticas.mejorRacha = this.estadisticas.rachaActual;
+					}
+					this.estadisticas.exitos[this.indiceCiudad]++;
+					this.guardarALocalStorage('estadisticas', this.estadisticas);
 				} else {
 					this.direcciones[this.indiceCiudad] = response.data.direccion;
+					this.partidaGuardada.isDisabledNuevaPartida = true;
 				}
 				this.indiceCiudad++;
 				this.indiceCeldas++;
+				this.partidaGuardada.idCoordleDia = this.idCoordleDia;
+				this.partidaGuardada.nombreCiudad = this.nombreCiudad;
+				this.partidaGuardada.territorioCiudad = this.territorioCiudad;
+				this.partidaGuardada.abreviaturaCiudad = this.abreviaturaCiudad;
+				this.partidaGuardada.celdas = this.celdas;
+				this.partidaGuardada.estado = this.estado;
+				this.partidaGuardada.direcciones = this.direcciones;
+				this.partidaGuardada.indiceCiudad = this.indiceCiudad;
+				this.partidaGuardada.indiceCeldas = this.indiceCeldas;
+				this.guardarALocalStorage('partidaGuardada', this.partidaGuardada);
 				this.coordenadas = '';
 				this.intento.latitud = 0;
 				this.intento.longitud = 0;
@@ -180,10 +282,13 @@ export default {
 				} else if (this.indiceCiudad == 6) {
 					document.getElementById('modalDerrota').style.display = 'inline';
 					document.getElementById("modalDerrota").classList.add("show");
+					this.estadisticas.rachaActual = 0;
+					this.estadisticas.fracasos++;
+					this.guardarALocalStorage('estadisticas', this.estadisticas);
 				}
 			})
 			.catch(e => {
-				this.errores.push(e)
+				console.log(e)
 			})
 		},
 		borrar() {
@@ -195,9 +300,9 @@ export default {
 			var modulo = this.indiceCeldas % 8;
 			switch (valor) {
 				case '0':
-					return modulo == 2 || modulo == 6 || modulo == 7;
+					return !this.isDisabledNuevaPartida || modulo == 2 || modulo == 6 || modulo == 7;
 				case '1':
-					return modulo == 2 || modulo == 6 || modulo == 7 ||
+					return !this.isDisabledNuevaPartida || modulo == 2 || modulo == 6 || modulo == 7 ||
 							(modulo == 5 && this.celdas[this.indiceCeldas - 2] == '1' && this.celdas[this.indiceCeldas - 1] == '8') ||
 							(modulo == 1 && this.celdas[this.indiceCeldas - 1] == '9');
 				case '2':
@@ -207,9 +312,11 @@ export default {
 				case '6':
 				case '7':
 				case '8':
-					return modulo == 2 || modulo == 6 || modulo == 7 || modulo == 3 || (modulo == 1 && this.celdas[this.indiceCeldas - 1] == '9');
+					return !this.isDisabledNuevaPartida || modulo == 2 || modulo == 6 || modulo == 7 || modulo == 3 ||
+							(modulo == 1 && this.celdas[this.indiceCeldas - 1] == '9');
 				case '9':
-					return modulo == 2 || modulo == 6 || modulo == 7 || modulo == 3 || (modulo == 1 && this.celdas[this.indiceCeldas - 1] == '9') ||
+					return !this.isDisabledNuevaPartida || modulo == 2 || modulo == 6 || modulo == 7 || modulo == 3 ||
+							(modulo == 1 && this.celdas[this.indiceCeldas - 1] == '9') ||
 							(modulo == 4 && this.celdas[this.indiceCeldas - 1] == '1');
 				case 'N':
 				case 'S':
@@ -249,6 +356,14 @@ export default {
 			document.getElementById('modalInfo').style.display = 'none';
 			document.getElementById("modalInfo").classList.remove("show");
 		},
+		mostrarEstadisticas() {
+			document.getElementById('modalEstadisticas').style.display = 'inline';
+			document.getElementById("modalEstadisticas").classList.add("show");
+		},
+		ocultarEstadisticas() {
+			document.getElementById('modalEstadisticas').style.display = 'none';
+			document.getElementById("modalEstadisticas").classList.remove("show");
+		},
 		nuevaPartida() {
 			axios.get('/coordledia/nuevo')
 			.then(response => {
@@ -256,10 +371,10 @@ export default {
 				this.nombreCiudad = response.data.nombre
 				this.territorioCiudad = response.data.territorio
 				this.abreviaturaCiudad = response.data.abreviatura
-				getURLImagen()
+				this.getURLImagen()
 			})
 			.catch(e => {
-				this.errores.push(e)
+				console.log(e)
 			})
 			document.getElementById('modalVictoria').style.display = 'none';
 			document.getElementById("modalVictoria").classList.remove("show");
@@ -269,9 +384,38 @@ export default {
 			this.estado = [];
 			this.direcciones = [9, 9, 9, 9, 9, 9];
 			this.coordenadas = '';
-			this.indiceCeldas = 0;
 			this.indiceCiudad = 0;
+			this.indiceCeldas = 0;
 			this.isDisabledNuevaPartida = true;
+			this.guardarALocalStorage
+			this.eliminarEnLocalStorage('partidaGuardada');
+		},
+		cargarDeLocalStorage(clave) {
+			return JSON.parse(localStorage.getItem(clave));
+		},
+		guardarALocalStorage(clave, objeto) {
+			localStorage.setItem(clave, JSON.stringify(objeto));
+		},
+		eliminarEnLocalStorage(clave) {
+			localStorage.removeItem(clave);
+		}
+	},
+	mounted() {
+		if (localStorage.getItem('partidaGuardada')) {
+			this.partidaGuardada = this.cargarDeLocalStorage('partidaGuardada');
+			this.idCoordleDia = this.partidaGuardada.idCoordleDia;
+			this.nombreCiudad = this.partidaGuardada.nombreCiudad;
+			this.territorioCiudad = this.partidaGuardada.territorioCiudad;
+			this.abreviaturaCiudad = this.partidaGuardada.abreviaturaCiudad;
+			this.celdas = this.partidaGuardada.celdas;
+			this.estado = this.partidaGuardada.estado;
+			this.direcciones = this.partidaGuardada.direcciones;
+			this.indiceCiudad = this.partidaGuardada.indiceCiudad;
+			this.indiceCeldas = this.partidaGuardada.indiceCeldas;
+			this.isDisabledNuevaPartida = this.partidaGuardada.isDisabledNuevaPartida;
+		}
+		if (localStorage.getItem('estadisticas')) {
+			this.estadisticas = this.cargarDeLocalStorage('estadisticas');
 		}
 	}
 }
@@ -298,6 +442,12 @@ export default {
 		top: 0px;
 		padding-top: 24px;
 		right: 0px;
+	}
+	#icono-ayuda {
+		padding-right: 12px;
+	}
+	#icono-estadisticas {
+		padding-right: 76px;
 	}
 	#contenedor-busqueda {
 		text-align: center;
@@ -355,5 +505,8 @@ export default {
 	}
 	.modal-title {
 		text-align: center;
+	}
+	.progress {
+		height: 1.5rem;
 	}
 </style>
