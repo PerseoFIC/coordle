@@ -40,6 +40,14 @@ public class Ciudad implements Serializable {
 	protected Ciudad() {
 	}
 
+	public String getCoordenadas() {
+		String coordenadas = Integer.toString(Math.abs(latitud));
+		coordenadas += latitud >= 0 ? "N" : "S";
+		coordenadas += Integer.toString(Math.abs(longitud));
+		coordenadas += longitud >= 0 ? "E" : "O";
+		return coordenadas;
+	}
+
 	public String toString() {
 		return "Ciudad [" + id + ", " + nombre + ", " + territorio + ", " + abreviatura + ", " + latitud + ", " + longitud + "]";
 	}

@@ -64,6 +64,8 @@
 			<b-modal id="modalDerrota" size="sm" hide-footer title="Fin de la partida">
 				<div class="d-block text-center">
 					<h3>¡Derrota!</h3>
+					<h5>Coordenadas correctas de {{ nombreCiudad }} - {{ territorioCiudad }}</h5>
+					<h5>{{ resultadoCorrecto }}</h5>
 				</div>
 				<div class="d-block text-center">
 					<b-button pill class="mt-3" variant="outline-success" @click="nuevaPartida">Nueva partida</b-button>
@@ -107,7 +109,7 @@
 		<div>
 			<b-modal id="modalEstadisticas" size="lg" hide-footer title="Estadísticas">
 				<div class="d-block text-center">
-					<h3>Estadísticas<br><br></h3>
+					<h3>Racha de victorias</h3>
 					<div class="row">
 						<div class="col">
 							<h1>{{ this.estadisticas.jugadas }}</h1>
@@ -126,6 +128,7 @@
 							<h5>Mejor racha</h5>
 						</div>
 					</div>
+					<h3>Victorias por intentos</h3>
 					<div class="row justify-content-center">
 						<div class="col-1">1: </div>
 						<div class="col-6"><div class="progress"><div class="progress-bar bg-success" role="progressbar" :style="this.getProgreso(this.estadisticas.exitos[0])">{{ this.estadisticas.exitos[0] }}</div></div></div>
@@ -189,7 +192,8 @@ export default {
 			intento: { latitud: 0, longitud: 0, coordleDia: 0, etiquetas: '' },
 			isDisabledNuevaPartida: true,
 			partidaGuardada: {idCoordleDia: 0, nombreCiudad: '', territorioCiudad: '', abreviaturaCiudad: '--', celdas: [], estado: [], direcciones: [9, 9, 9, 9, 9, 9], indiceCiudad: 0, indiceCeldas: 0, isDisabledNuevaPartida: true},
-			estadisticas: {jugadas: 0, ganadas: 0, rachaActual: 0, mejorRacha: 0, exitos: [0, 0, 0, 0, 0, 0], fracasos: 0}
+			estadisticas: {jugadas: 0, ganadas: 0, rachaActual: 0, mejorRacha: 0, exitos: [0, 0, 0, 0, 0, 0], fracasos: 0},
+			resultadoCorrecto: ''
 		};
 	},
 	methods: {
@@ -235,6 +239,7 @@ export default {
 			this.intento.longitud *= this.coordenadas.charAt(6) == 'E' ? 1 : -1;
 			this.intento.coordleDia = this.idCoordleDia;
 			this.intento.etiquetas = this.coordenadas;
+			this.intento.numeroIntento = this.indiceCiudad;
 			axios.post('/intento/', this.intento)
 			.then(response => {
 				this.estado[this.indiceCiudad * 8] = response.data.valor1;
@@ -248,8 +253,8 @@ export default {
 				if (response.data.exito) {
 					this.direcciones[this.indiceCiudad] = 10;
 					this.partidaGuardada.isDisabledNuevaPartida = false;
-					this.estadisticas.jugadas++;
 					this.estadisticas.ganadas++;
+					this.estadisticas.jugadas = this.estadisticas.ganadas + this.estadisticas.fracasos;
 					this.estadisticas.rachaActual++;
 					if (this.estadisticas.rachaActual > this.estadisticas.mejorRacha) {
 						this.estadisticas.mejorRacha = this.estadisticas.rachaActual;
@@ -271,7 +276,6 @@ export default {
 				this.partidaGuardada.direcciones = this.direcciones;
 				this.partidaGuardada.indiceCiudad = this.indiceCiudad;
 				this.partidaGuardada.indiceCeldas = this.indiceCeldas;
-				this.guardarALocalStorage('partidaGuardada', this.partidaGuardada);
 				this.coordenadas = '';
 				this.intento.latitud = 0;
 				this.intento.longitud = 0;
@@ -280,12 +284,16 @@ export default {
 					document.getElementById('modalVictoria').style.display = 'inline';
 					document.getElementById("modalVictoria").classList.add("show");
 				} else if (this.indiceCiudad == 6) {
+					this.resultadoCorrecto = response.data.coordenadasCorrectas;
 					document.getElementById('modalDerrota').style.display = 'inline';
 					document.getElementById("modalDerrota").classList.add("show");
 					this.estadisticas.rachaActual = 0;
 					this.estadisticas.fracasos++;
+					this.estadisticas.jugadas = this.estadisticas.ganadas + this.estadisticas.fracasos;
 					this.guardarALocalStorage('estadisticas', this.estadisticas);
+					this.partidaGuardada.isDisabledNuevaPartida = false;
 				}
+				this.guardarALocalStorage('partidaGuardada', this.partidaGuardada);
 			})
 			.catch(e => {
 				console.log(e)

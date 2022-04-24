@@ -66,10 +66,16 @@ public class Intento implements Serializable {
 	@Column
 	private Boolean exito;
 
+	@NotNull
+	@Column
 	private String etiquetas;
 
-	public Intento(Integer latitud, Integer longitud, Boolean valor1, Boolean valor2, Boolean valor3,
-			Boolean valor4, Boolean valor5, Boolean valor6, Boolean valor7, Integer direccion, Boolean exito, String etiquetas) {
+	@NotNull
+	@Column
+	private Integer numeroIntento;
+
+	public Intento(Integer latitud, Integer longitud, Boolean valor1, Boolean valor2, Boolean valor3, Boolean valor4,
+			Boolean valor5, Boolean valor6, Boolean valor7, Integer direccion, Boolean exito, String etiquetas, Integer numeroIntento) {
 		this.latitud = latitud;
 		this.longitud = longitud;
 		this.valor1 = valor1;
@@ -82,14 +88,15 @@ public class Intento implements Serializable {
 		this.direccion = direccion;
 		this.exito = exito;
 		this.etiquetas = etiquetas;
+		this.numeroIntento = numeroIntento;
 	}
 
 	protected Intento() {
 	}
 
 	public String toString() {
-		return "Intento [" + id + ", " + coordleDia + ", " + latitud + ", " + longitud + ", " + valor1 + ", " + valor2 + ", " + valor3 +
-				", " + valor4 + ", " + valor5 + ", " + valor6 + ", " + valor7 + ", " + direccion + ", " + exito + ", " + etiquetas + "]";
+		return "Intento [" + id + ", " + coordleDia + ", " + latitud + ", " + longitud + ", " + valor1 + ", " + valor2 + ", " + valor3 + ", " + valor4 +
+				", " + valor5 + ", " + valor6 + ", " + valor7 + ", " + direccion + ", " + exito + ", " + etiquetas + ", " + numeroIntento + "]";
 	}
 
 }

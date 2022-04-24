@@ -31,7 +31,7 @@ public class IntentoController {
 		CoordleDia coordleDia = coordleDiaServicio.get(intento.getCoordleDia().getId()).get();
 		intentoServicio.calcularExito(intento, coordleDia);
 		intentoServicio.save(intento);
-		return new ResultadoIntento(intento);
+		return new ResultadoIntento(intento, coordleDia);
 	}
 
 	@GetMapping
