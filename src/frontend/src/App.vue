@@ -1,5 +1,8 @@
 <template>
 	<v-app>
+		<div id="div-alertaCompartir" class="text-center">
+			<b-alert v-model="mostrarAlertaCompartir" variant="success" dismissible>Resultado copiado</b-alert>
+		</div>
 		<b-container id="contenedor-titulo" class="text-center position-relative border-bottom mb-3">
 			<div id="icono-info" class="position-absolute izquierda">
 				<img src="/icons/info-circle.svg" width="32" height="32" @click="mostrarInfo">
@@ -203,7 +206,8 @@ export default {
 			isDisabledNuevaPartida: true,
 			partidaGuardada: {idCoordleDia: 0, nombreCiudad: '', territorioCiudad: '', abreviaturaCiudad: '--', celdas: [], estado: [], direcciones: [9, 9, 9, 9, 9, 9], indiceCiudad: 0, indiceCeldas: 0, isDisabledNuevaPartida: true},
 			estadisticas: {jugadas: 0, ganadas: 0, rachaActual: 0, mejorRacha: 0, exitos: [0, 0, 0, 0, 0, 0], fracasos: 0},
-			resultadoCorrecto: ''
+			resultadoCorrecto: '',
+			mostrarAlertaCompartir: false
 		};
 	},
 	methods: {
@@ -349,11 +353,13 @@ export default {
 			}
 		},
 		ocultarVictoria() {
+			this.mostrarAlertaCompartir = false;
 			document.getElementById('modalVictoria').style.display = 'none';
 			document.getElementById("modalVictoria").classList.remove("show");
 			this.isDisabledNuevaPartida = false;
 		},
 		ocultarDerrota() {
+			this.mostrarAlertaCompartir = false;
 			document.getElementById('modalDerrota').style.display = 'none';
 			document.getElementById("modalDerrota").classList.remove("show");
 			this.isDisabledNuevaPartida = false;
@@ -404,17 +410,7 @@ export default {
 			return 'https://coordle.herokuapp.com';
 		},
 		compartirFinPartida() {
-			if (navigator.share) {
-				navigator.share({
-					title: this.getTituloFinPartida(),
-					text: this.getTextoFinPartida(),
-					url: this.getURLFinPartida()
-				});
-			} else {
-				this.copiarFinPartidaAlPortapapeles();
-			}
-		},
-		copiarFinPartidaAlPortapapeles() {
+			this.mostrarAlertaCompartir = true;
 			var textoCompleto = this.getTituloFinPartida() + '\n\n' + this.getTextoFinPartida() + '\n' + this.getURLFinPartida();
 			if (navigator.clipboard) {
 				navigator.clipboard.writeText(textoCompleto);
@@ -435,6 +431,7 @@ export default {
 			document.body.removeChild(textArea);
 		},
 		nuevaPartida() {
+			this.mostrarAlertaCompartir = false;
 			axios.get('/coordledia/nuevo')
 			.then(response => {
 				this.idCoordleDia = response.data.idCoordleDia
