@@ -46,13 +46,20 @@
 				<b-col><b-button @click="borrar()" :disabled="isDisabled('Borrar')">Borrar</b-button></b-col>
 			</b-row>
 		</b-container>
-		<div class="d-block text-center" v-if="!isDisabledNuevaPartida">
-			<b-button pill class="mt-3" variant="outline-success" @click="nuevaPartida" :disabled="isDisabledNuevaPartida">Nueva partida</b-button>
-		</div>
+		<b-container id="matriz-botones-footer">
+			<div class="d-block text-center" v-if="!isDisabledNuevaPartida">
+				<b-button pill class="mt-3" variant="outline-success" @click="nuevaPartida" :disabled="isDisabledNuevaPartida">Nueva partida</b-button>
+			</div>
+		</b-container>
 		<div>
 			<b-modal id="modalVictoria" size="sm" hide-footer title="Fin de la partida">
 				<div class="d-block text-center">
 					<h3>¡Victoria!</h3>
+					<h5>Has ubicado correctamente</h5>
+					<h5>{{ nombreCiudad }} - {{ territorioCiudad }}</h5>
+				</div>
+				<div class="d-block text-center">
+					<b-button pill class="mt-3" variant="outline-primary" @click="compartirFinPartida">Compartir</b-button>
 				</div>
 				<div class="d-block text-center">
 					<b-button pill class="mt-3" variant="outline-success" @click="nuevaPartida">Nueva partida</b-button>
@@ -66,6 +73,9 @@
 					<h3>¡Derrota!</h3>
 					<h5>Coordenadas correctas de {{ nombreCiudad }} - {{ territorioCiudad }}</h5>
 					<h5>{{ resultadoCorrecto }}</h5>
+				</div>
+				<div class="d-block text-center">
+					<b-button pill class="mt-3" variant="outline-primary" @click="compartirFinPartida">Compartir</b-button>
 				</div>
 				<div class="d-block text-center">
 					<b-button pill class="mt-3" variant="outline-success" @click="nuevaPartida">Nueva partida</b-button>
@@ -207,7 +217,7 @@ export default {
 					this.abreviaturaCiudad = response.data.abreviatura
 				})
 				.catch(e => {
-					console.log(e)
+					console.error(e)
 				})
 			}
 			return "/images/" + this.abreviaturaCiudad + "/256.png";
@@ -296,7 +306,7 @@ export default {
 				this.guardarALocalStorage('partidaGuardada', this.partidaGuardada);
 			})
 			.catch(e => {
-				console.log(e)
+				console.error(e)
 			})
 		},
 		borrar() {
@@ -372,6 +382,58 @@ export default {
 			document.getElementById('modalEstadisticas').style.display = 'none';
 			document.getElementById("modalEstadisticas").classList.remove("show");
 		},
+		getTituloFinPartida() {
+			return 'COORDLE 🌏 ' + this.nombreCiudad + ' ' +
+					(this.partidaGuardada.estado[this.partidaGuardada.estado.length - 1] ? this.indiceCiudad + '/6' : '❌');
+		},
+		getTextoFinPartida() {
+			var ok = '✅';
+			var ko = '⬜';
+			var direcciones = ['⬆', '↗', '➡', '↘', '⬇', '↙', '⬅', '↖', '⬆', '❓', '🎯'];
+			var texto = '';
+			for (let i = 0; i < this.partidaGuardada.estado.length; i++) {
+				if (i % 8 != 7) {
+					texto += this.partidaGuardada.estado[i] ? ok : ko;
+				} else {
+					texto += direcciones[this.partidaGuardada.direcciones[Math.floor(i / 8)]] + '\n';
+				}
+			}
+			return texto;
+		},
+		getURLFinPartida() {
+			return 'https://coordle.herokuapp.com';
+		},
+		compartirFinPartida() {
+			if (navigator.share) {
+				navigator.share({
+					title: this.getTituloFinPartida(),
+					text: this.getTextoFinPartida(),
+					url: this.getURLFinPartida()
+				});
+			} else {
+				this.copiarFinPartidaAlPortapapeles();
+			}
+		},
+		copiarFinPartidaAlPortapapeles() {
+			var textoCompleto = this.getTituloFinPartida() + '\n\n' + this.getTextoFinPartida() + '\n' + this.getURLFinPartida();
+			if (navigator.clipboard) {
+				navigator.clipboard.writeText(textoCompleto);
+			} else {
+				this.copiarFinPartida(textoCompleto);
+			}
+		},
+		copiarFinPartida(textoFinPartida) {
+			var textArea = document.createElement("textarea");
+			textArea.value = textoFinPartida;
+			textArea.style.top = "0";
+			textArea.style.left = "0";
+			textArea.style.position = "fixed";
+			document.body.appendChild(textArea);
+			textArea.focus();
+			textArea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textArea);
+		},
 		nuevaPartida() {
 			axios.get('/coordledia/nuevo')
 			.then(response => {
@@ -382,7 +444,7 @@ export default {
 				this.getURLImagen()
 			})
 			.catch(e => {
-				console.log(e)
+				console.error(e)
 			})
 			document.getElementById('modalVictoria').style.display = 'none';
 			document.getElementById("modalVictoria").classList.remove("show");
