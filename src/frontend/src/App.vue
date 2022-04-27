@@ -5,14 +5,14 @@
 		</div>
 		<b-container id="contenedor-titulo" class="text-center position-relative border-bottom mb-3">
 			<div id="icono-info" class="position-absolute izquierda">
-				<img src="/icons/info-circle.svg" width="32" height="32" @click="mostrarInfo">
+				<img src="/icons/info-circle.svg" width="32" height="32" @click="mostrarModal('modalInfo')">
 			</div>
 			<h1 class="text-center mb-0 centrado-vertical">COORDLE</h1>
 			<div id="icono-estadisticas" class="position-absolute derecha">
-				<img src="/icons/clipboard-data.svg" width="32" height="32" @click="mostrarEstadisticas">
+				<img src="/icons/clipboard-data.svg" width="32" height="32" @click="mostrarModal('modalEstadisticas')">
 			</div>
 			<div id="icono-ayuda" class="position-absolute derecha">
-				<img src="/icons/patch-question.svg" width="32" height="32" @click="mostrarAyuda">
+				<img src="/icons/patch-question.svg" width="32" height="32" @click="mostrarModal('modalAyuda')">
 			</div>
 		</b-container>
 		<b-container id="contenedor-busqueda">
@@ -62,11 +62,11 @@
 					<h5>{{ nombreCiudad }} - {{ territorioCiudad }}</h5>
 				</div>
 				<div class="d-block text-center">
-					<b-button pill class="mt-3" variant="outline-primary" @click="compartirFinPartida">Compartir</b-button>
+					<b-button pill class="mt-3" variant="outline-primary" @click="compartirFinPartida">Copiar</b-button>
 				</div>
 				<div class="d-block text-center">
 					<b-button pill class="mt-3" variant="outline-success" @click="nuevaPartida">Nueva partida</b-button>
-					<b-button pill class="mt-3" variant="outline-info" @click="ocultarVictoria">Cerrar</b-button>
+					<b-button pill class="mt-3" variant="outline-info" @click="ocultarModalFinPartida('modalVictoria')">Cerrar</b-button>
 				</div>
 			</b-modal>
 		</div>
@@ -78,18 +78,18 @@
 					<h5>{{ resultadoCorrecto }}</h5>
 				</div>
 				<div class="d-block text-center">
-					<b-button pill class="mt-3" variant="outline-primary" @click="compartirFinPartida">Compartir</b-button>
+					<b-button pill class="mt-3" variant="outline-primary" @click="compartirFinPartida">Copiar</b-button>
 				</div>
 				<div class="d-block text-center">
 					<b-button pill class="mt-3" variant="outline-success" @click="nuevaPartida">Nueva partida</b-button>
-					<b-button pill class="mt-3" variant="outline-info" @click="ocultarDerrota">Cerrar</b-button>
+					<b-button pill class="mt-3" variant="outline-info" @click="ocultarModalFinPartida('modalDerrota')">Cerrar</b-button>
 				</div>
 			</b-modal>
 		</div>
 		<div>
 			<b-modal id="modalAyuda" size="lg" hide-footer title="Ayuda">
 				<div class="d-block text-center">
-					<h3>¿Cómo jugar?<br><br></h3>
+					<h3>¿Cómo jugar?</h3>
 					<h5>
 					Debes acertar las coordenadas de la capital que se muestra, averiguando su latitud y longitud medidas en grados (redondeado a su valor más cercano).<br><br>
 					La latitud tendrá un valor entre los 0 y los 90 grados, pudiendo ser Norte o Sur.<br><br>
@@ -99,14 +99,14 @@
 					</h5>
 				</div>
 				<div class="d-block text-center">
-					<b-button pill class="mt-3" variant="outline-info" @click="ocultarAyuda">Cerrar</b-button>
+					<b-button pill class="mt-3" variant="outline-info" @click="ocultarModal('modalAyuda')">Cerrar</b-button>
 				</div>
 			</b-modal>
 		</div>
 		<div>
 			<b-modal id="modalInfo" size="lg" hide-footer title="Información">
 				<div class="d-block text-center">
-					<h3>Información<br><br></h3>
+					<h3>Información y enlaces</h3>
 					<h5>
 					Juego de coordenadas estilo <a href="https://www.powerlanguage.co.uk/wordle">Wordle</a>.<br><br>
 					Juego subido a <a href="https://coordle.herokuapp.com/">Heroku</a>.<br><br>
@@ -115,7 +115,7 @@
 					</h5>
 				</div>
 				<div class="d-block text-center">
-					<b-button pill class="mt-3" variant="outline-info" @click="ocultarInfo">Cerrar</b-button>
+					<b-button pill class="mt-3" variant="outline-info" @click="ocultarModal('modalInfo')">Cerrar</b-button>
 				</div>
 			</b-modal>
 		</div>
@@ -179,7 +179,7 @@
 					</div>
 				</div>
 				<div class="d-block text-center">
-					<b-button pill class="mt-3" variant="outline-info" @click="ocultarEstadisticas">Cerrar</b-button>
+					<b-button pill class="mt-3" variant="outline-info" @click="ocultarModal('modalEstadisticas')">Cerrar</b-button>
 				</div>
 			</b-modal>
 		</div>
@@ -295,12 +295,10 @@ export default {
 				this.intento.longitud = 0;
 				this.intento.etiquetas = '';
 				if (response.data.exito) {
-					document.getElementById('modalVictoria').style.display = 'inline';
-					document.getElementById("modalVictoria").classList.add("show");
+					this.mostrarModal('modalVictoria');
 				} else if (this.indiceCiudad == 6) {
 					this.resultadoCorrecto = response.data.coordenadasCorrectas;
-					document.getElementById('modalDerrota').style.display = 'inline';
-					document.getElementById("modalDerrota").classList.add("show");
+					this.mostrarModal('modalDerrota');
 					this.estadisticas.rachaActual = 0;
 					this.estadisticas.fracasos++;
 					this.estadisticas.jugadas = this.estadisticas.ganadas + this.estadisticas.fracasos;
@@ -352,41 +350,18 @@ export default {
 					return this.indiceCeldas == (8 * this.indiceCiudad);
 			}
 		},
-		ocultarVictoria() {
+		mostrarModal(nombreModal) {
+			document.getElementById(nombreModal).style.display = 'inline';
+			document.getElementById(nombreModal).classList.add("show");
+		},
+		ocultarModal(nombreModal) {
+			document.getElementById(nombreModal).style.display = 'none';
+			document.getElementById(nombreModal).classList.remove("show");
+		},
+		ocultarModalFinPartida(nombreModal) {
 			this.mostrarAlertaCompartir = false;
-			document.getElementById('modalVictoria').style.display = 'none';
-			document.getElementById("modalVictoria").classList.remove("show");
+			this.ocultarModal(nombreModal);
 			this.isDisabledNuevaPartida = false;
-		},
-		ocultarDerrota() {
-			this.mostrarAlertaCompartir = false;
-			document.getElementById('modalDerrota').style.display = 'none';
-			document.getElementById("modalDerrota").classList.remove("show");
-			this.isDisabledNuevaPartida = false;
-		},
-		mostrarAyuda() {
-			document.getElementById('modalAyuda').style.display = 'inline';
-			document.getElementById("modalAyuda").classList.add("show");
-		},
-		ocultarAyuda() {
-			document.getElementById('modalAyuda').style.display = 'none';
-			document.getElementById("modalAyuda").classList.remove("show");
-		},
-		mostrarInfo() {
-			document.getElementById('modalInfo').style.display = 'inline';
-			document.getElementById("modalInfo").classList.add("show");
-		},
-		ocultarInfo() {
-			document.getElementById('modalInfo').style.display = 'none';
-			document.getElementById("modalInfo").classList.remove("show");
-		},
-		mostrarEstadisticas() {
-			document.getElementById('modalEstadisticas').style.display = 'inline';
-			document.getElementById("modalEstadisticas").classList.add("show");
-		},
-		ocultarEstadisticas() {
-			document.getElementById('modalEstadisticas').style.display = 'none';
-			document.getElementById("modalEstadisticas").classList.remove("show");
 		},
 		getTituloFinPartida() {
 			return 'COORDLE 🌏 ' + this.nombreCiudad + ' ' +
@@ -443,10 +418,8 @@ export default {
 			.catch(e => {
 				console.error(e)
 			})
-			document.getElementById('modalVictoria').style.display = 'none';
-			document.getElementById("modalVictoria").classList.remove("show");
-			document.getElementById('modalDerrota').style.display = 'none';
-			document.getElementById("modalDerrota").classList.remove("show");
+			this.ocultarModal('modalVictoria');
+			this.ocultarModal('modalDerrota');
 			this.celdas = [];
 			this.estado = [];
 			this.direcciones = [9, 9, 9, 9, 9, 9];
@@ -566,6 +539,9 @@ export default {
 	}
 	.btn-close {
 		display: none;
+	}
+	.modal-dialog {
+		margin: 5rem auto !important;
 	}
 	.modal-header {
 		display: inline;
